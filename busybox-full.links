@@ -51,6 +51,7 @@
 /bin/expand
 /bin/expr
 /bin/false
+/sbin/fbset
 /sbin/fbsplash
 /sbin/fdisk
 /bin/fgconsole
