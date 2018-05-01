@@ -18,6 +18,7 @@ LOCAL_SRC_FILES := android/regex/bb_regex.c
 LOCAL_C_INCLUDES := $(BB_PATH)/android/regex
 LOCAL_CFLAGS := -Wno-sign-compare
 LOCAL_MODULE := libclearsilverregex
+LOCAL_CLANG := false
 include $(BUILD_STATIC_LIBRARY)
 
 # Make a static library for RPC library (coming from uClibc).
@@ -25,6 +26,7 @@ include $(CLEAR_VARS)
 LOCAL_SRC_FILES := $(shell cat $(BB_PATH)/android/librpc.sources)
 LOCAL_C_INCLUDES := $(BB_PATH)/android/librpc
 LOCAL_MODULE := libuclibcrpc
+LOCAL_CLANG := false
 LOCAL_CFLAGS += -fno-strict-aliasing
 LOCAL_CFLAGS += $(BIONIC_CFLAGS)
 include $(BUILD_STATIC_LIBRARY)
@@ -100,6 +102,7 @@ LOCAL_CFLAGS += \
   -Dgenerate_uuid=busybox_generate_uuid
 LOCAL_ASFLAGS := $(BUSYBOX_AFLAGS)
 LOCAL_MODULE := libbusybox
+LOCAL_CLANG := false
 LOCAL_MODULE_TAGS := eng debug
 LOCAL_MODULE_CLASS := STATIC_LIBRARIES
 LOCAL_STATIC_LIBRARIES := libcutils libc libm libselinux
@@ -126,6 +129,7 @@ BUSYBOX_SUFFIX:=bionic
 LOCAL_SRC_FILES := $(BUSYBOX_SRC_FILES)
 LOCAL_ASFLAGS := $(BUSYBOX_AFLAGS)
 LOCAL_MODULE := busybox
+LOCAL_CLANG := false
 LOCAL_MODULE_TAGS := eng debug
 LOCAL_MODULE_CLASS := EXECUTABLES
 LOCAL_MODULE_PATH := $(TARGET_OUT_OPTIONAL_EXECUTABLES)
@@ -180,6 +184,7 @@ LOCAL_CFLAGS += \
 LOCAL_ASFLAGS := $(BUSYBOX_AFLAGS)
 LOCAL_FORCE_STATIC_EXECUTABLE := true
 LOCAL_MODULE := static_busybox
+LOCAL_CLANG := false
 LOCAL_MODULE_STEM := busybox
 LOCAL_MODULE_TAGS := optional
 LOCAL_STATIC_LIBRARIES := libclearsilverregex libc libcutils libm libuclibcrpc libselinux
