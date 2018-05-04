@@ -1,5 +1,6 @@
 LOCAL_PATH := $(call my-dir)
 BB_PATH := $(LOCAL_PATH)
+INTERNAL_LOCAL_CLANG_EXCEPTION_PROJECTS += $(BB_PATH)/
 
 # Bionic Branches Switches
 BIONIC_I := $(shell test $(PLATFORM_SDK_VERSION) -ge 14 && echo true)
@@ -11,12 +12,13 @@ BIONIC_CFLAGS := \
 	$(if $(BIONIC_L),-DBIONIC_L) \
 	$(if $(BIONIC_N),-DBIONIC_N -D_GNU_SOURCE) \
 	$(if $(BIONIC_O),-DBIONIC_O) \
+	-fno-stack-protector
 
 # Make a static library for regex.
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES := android/regex/bb_regex.c
 LOCAL_C_INCLUDES := $(BB_PATH)/android/regex
-LOCAL_CFLAGS := -Wno-sign-compare
+LOCAL_CFLAGS := -Wno-sign-compare -fno-stack-protector
 LOCAL_MODULE := libclearsilverregex
 LOCAL_CLANG := false
 include $(BUILD_STATIC_LIBRARY)
