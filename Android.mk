@@ -18,7 +18,7 @@ BIONIC_CFLAGS := \
 include $(CLEAR_VARS)
 LOCAL_SRC_FILES := android/regex/bb_regex.c
 LOCAL_C_INCLUDES := $(BB_PATH)/android/regex
-LOCAL_CFLAGS := -Wno-sign-compare -fno-stack-protector
+LOCAL_CFLAGS := -Wno-sign-compare -fno-stack-protector -Wno-unused-parameter -Wno-unused-variable
 LOCAL_MODULE := libclearsilverregex
 include $(BUILD_STATIC_LIBRARY)
 
@@ -86,6 +86,9 @@ BB_VER := 1.22.1
 BUSYBOX_CFLAGS := $(BIONIC_CFLAGS) \
 	-Werror=implicit -Wno-clobbered \
 	-Wno-format -Wno-pointer-sign -Wno-sign-compare -Wno-uninitialized \
+	-Wno-unused-function -Wno-string-plus-int -Wno-unused-local-typedef \
+	-Wno-shift-negative-value -Wno-address-of-packed-member -Wno-constant-conversion \
+	-Wno-logical-not-parentheses -Wno-non-literal-null-conversion -Wno-ignored-attributes \
 	-DNDEBUG \
 	-fno-strict-aliasing \
 	-fno-builtin-stpcpy \
