@@ -45,9 +45,22 @@ ifndef MAKE_PATH
     MAKE_EXTRA_PATH := $(HOST_TOOLCHAIN):$(HOST_TOOLCHAIN_LIBEXEC)
     MAKE_PATH = PATH="$(MAKE_EXTRA_PATH):$$PATH" $(PWD)/prebuilts/build-tools/linux-x86/bin/make
 endif
-BB_CC := $(abspath $(TARGET_TOOLS_PREFIX))gcc
-BB_HOSTCC := $(abspath $(LLVM_PREBUILTS_PATH)/clang)
-BB_PREPARE_FLAGS := CC=$(BB_CC) HOSTCC=$(BB_HOSTCC) PKG_CONFIG=/usr/bin/pkg-config
+BB_PREPARE_FLAGS := PKG_CONFIG=/usr/bin/pkg-config \
+        LLVM=1 \
+        CC=$(abspath $(LLVM_PREBUILTS_PATH)/clang) \
+        LD=$(abspath $(LLVM_PREBUILTS_PATH)/ld.lld) \
+        AR=$(abspath $(LLVM_PREBUILTS_PATH)/llvm-ar) \
+        NM=$(abspath $(LLVM_PREBUILTS_PATH)/llvm-nm) \
+        OBJCOPY=$(abspath $(LLVM_PREBUILTS_PATH)/llvm-objcopy) \
+        OBJDUMP=$(abspath $(LLVM_PREBUILTS_PATH)/llvm-objdump) \
+        READELF=$(abspath $(LLVM_PREBUILTS_PATH)/llvm-readelf) \
+        OBJSIZE=$(abspath $(LLVM_PREBUILTS_PATH)/llvm-size) \
+        STRIP=$(abspath $(LLVM_PREBUILTS_PATH)/llvm-strip) \
+        HOSTCC=$(abspath $(LLVM_PREBUILTS_PATH)/clang) \
+        HOSTCXX=$(abspath $(LLVM_PREBUILTS_PATH)/clang++) \
+        HOSTLD=$(abspath $(LLVM_PREBUILTS_PATH)/ld.lld) \
+        HOSTLDFLAGS=-fuse-ld=lld \
+        HOSTAR=$(abspath $(LLVM_PREBUILTS_PATH)/llvm-ar)
 ifeq ($(HOST_OS),darwin)
     BB_HOSTCC := $(ANDROID_BUILD_TOP)/prebuilts/gcc/darwin-x86/host/i686-apple-darwin-4.2.1/bin/i686-apple-darwin11-gcc
     BB_PREPARE_FLAGS := HOSTCC=$(BB_HOSTCC)
