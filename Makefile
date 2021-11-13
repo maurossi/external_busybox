@@ -2,7 +2,13 @@ VERSION = 1
 PATCHLEVEL = 34
 SUBLEVEL = 1
 EXTRAVERSION =
-NAME = Unnamed
+NAME = bionic
+
+# prevent local tree builds in bionic,
+# but allow initial version check (SUBMAKE)
+ifeq (,$(filter s, $(MAKEFLAGS)))
+    KBUILD_OUTPUT ?= $(OUT)/obj/busybox
+endif
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
@@ -104,7 +110,8 @@ ifneq ($(KBUILD_OUTPUT),)
 saved-output := $(KBUILD_OUTPUT)
 KBUILD_OUTPUT := $(shell cd $(KBUILD_OUTPUT) && /bin/pwd)
 $(if $(KBUILD_OUTPUT),, \
-     $(error output directory "$(saved-output)" does not exist))
+     $(warning output directory "$(saved-output)" does not exist) \
+	$(error On AOSP repo, type 'mma' to build or set O=out/<folder> ))
 
 PHONY += $(MAKECMDGOALS)
 
@@ -271,7 +278,7 @@ export quiet Q KBUILD_VERBOSE
 # Look for make include files relative to root of kernel src
 MAKEFLAGS += --include-dir=$(srctree)
 
-HOSTCC  	= gcc
+HOSTCC  	= $(HOSTCC)
 HOSTCXX  	= g++
 HOSTCFLAGS	:=
 HOSTCXXFLAGS	:=
@@ -290,7 +297,7 @@ MAKEFLAGS += -rR
 
 AS		= $(CROSS_COMPILE)as
 CC		= $(CROSS_COMPILE)gcc
-LD		= $(CC) -nostdlib
+LD		= $(CROSS_COMPILE)ld
 CPP		= $(CC) -E
 AR		= $(CROSS_COMPILE)ar
 NM		= $(CROSS_COMPILE)nm
@@ -987,6 +994,9 @@ MRPROPER_FILES += .config .config.old include/asm .version .old_version \
 		  .kernelrelease Module.symvers tags TAGS cscope* \
 		  busybox_old
 
+MRPROPER_FILES += include-full/*.h \
+                  include-minimal/*.h
+
 # clean - Delete most, but leave enough to build external modules
 #
 clean: rm-dirs  := $(CLEAN_DIRS)
@@ -1176,7 +1186,24 @@ endif
 ALLSOURCE_ARCHS := $(ARCH)
 
 define all-sources
-	( find -regex '.*\.[ch]$$' )
+	( find $(__srctree) $(RCS_FIND_IGNORE) \
+	       \( -name include -o -name arch \) -prune -o \
+	       -name '*.[chS]' -print; \
+	  for ARCH in $(ALLSOURCE_ARCHS) ; do \
+	       find $(__srctree)arch/$${ARCH} $(RCS_FIND_IGNORE) \
+	            -name '*.[chS]' -print; \
+	  done ; \
+	  find $(__srctree)security/selinux/include $(RCS_FIND_IGNORE) \
+	       -name '*.[chS]' -print; \
+	  find $(__srctree)include $(RCS_FIND_IGNORE) \
+	       \( -name config -o -name 'asm-*' \) -prune \
+	       -o -name '*.[chS]' -print; \
+	  for ARCH in $(ALLINCLUDE_ARCHS) ; do \
+	       find $(__srctree)include/asm-$${ARCH} $(RCS_FIND_IGNORE) \
+	            -name '*.[chS]' -print; \
+	  done ; \
+	  find $(__srctree)include/asm-generic $(RCS_FIND_IGNORE) \
+	       -name '*.[chS]' -print )
 endef
 
 quiet_cmd_cscope-file = FILELST cscope.files
@@ -1328,6 +1355,11 @@ endif	# skip-makefile
 
 PHONY += FORCE
 FORCE:
+
+show-sources:
+	@for f in $(busybox-dirs) ; do \
+		$(MAKE) $(build)=$$f show-src ; \
+	done
 
 -include $(srctree)/Makefile.custom
 
